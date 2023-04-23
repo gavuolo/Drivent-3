@@ -10,6 +10,9 @@ async function allHotels(userId: number){
     await checkPaymentStatus(ticket)
     await checkTicketType(ticket)
     const hotels = await hotelsRepository.findAllHotels()
+    if(!hotels){
+        throw notFoundError()
+    }
     return hotels
 }
 async function checkPaymentStatus(ticket: Ticket & {TicketType:TicketType}){
@@ -19,7 +22,7 @@ async function checkPaymentStatus(ticket: Ticket & {TicketType:TicketType}){
 }
 async function checkTicketType(ticket: Ticket & {TicketType:TicketType}) {
     if (!ticket.TicketType.includesHotel) {
-        throw new Error('Ticket type does not include hotel') 
+        throw PaymentRequired()
     }
 }
 async function checkEnrollmentAndTicket(userId: number): Promise<Ticket & {TicketType: TicketType}>{
@@ -34,7 +37,6 @@ async function checkEnrollmentAndTicket(userId: number): Promise<Ticket & {Ticke
     }
     return ticket
 }
-
 async function hotelById(hotelId: number, userId: number){
     const ticket = await checkEnrollmentAndTicket(userId)
     await checkPaymentStatus(ticket)
