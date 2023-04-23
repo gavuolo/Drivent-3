@@ -16,6 +16,7 @@ async function getTicketByUserId(userId: number): Promise<Ticket> {
   if (!enrollment) throw notFoundError();
 
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
+  console.log("AQUI É O QUE VEM DO TICKET AQUELA FUNÇÃO LÁ", ticket)
   if (!ticket) throw notFoundError();
 
   return ticket;
