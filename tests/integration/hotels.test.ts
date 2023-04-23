@@ -1,22 +1,21 @@
-// import httpStatus from 'http-status';
-// import supertest from 'supertest';
-// import app, { init } from '@/app';
-// import { cleanDb } from '../helpers';
+import httpStatus from 'http-status';
+import supertest from 'supertest';
+import app, { init } from '@/app';
+import { cleanDb } from '../helpers';
 
-// beforeAll(async () => {
-//     await init();
-// });
+beforeAll(async () => {
+    await init();
+});
 
-// beforeEach(async () => {
-//     await cleanDb();
-// });
+beforeEach(async () => {
+    await cleanDb();
+});
 
-// const server = supertest(app);
+const server = supertest(app);
 
-// describe('GET /hotels', () => {
-//     it('Buscar todos os hoteis', async () => {
-//       const response = await server.get('/hotel');
-//       console.log(response.body)
-//       expect(response.status).toBe(200)
-//     });
-// })
+describe('GET /hotels', () => {
+    it('Should respond with status 401 if no token is given', async () => {
+      const response = await server.get('/hotels');
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED)
+    });
+})

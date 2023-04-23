@@ -21,19 +21,19 @@ async function checkPaymentStatus(ticket: Ticket & {TicketType:TicketType}){
     }
 }
 async function checkTicketType(ticket: Ticket & {TicketType:TicketType}) {
-    if (!ticket.TicketType.includesHotel) {
+    if (!ticket.TicketType.includesHotel || ticket.TicketType.isRemote) {
         throw PaymentRequired()
     }
 }
 async function checkEnrollmentAndTicket(userId: number): Promise<Ticket & {TicketType: TicketType}>{
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId)
     if(!enrollment) {
-        throw notFoundError
+        throw notFoundError()
     }
     const enrollmentId = enrollment.id
     const ticket: Ticket & {TicketType: TicketType} = await ticketsRepository.findTicketByEnrollmentId(enrollmentId)
     if(!ticket) {
-        throw notFoundError
+        throw notFoundError()
     }
     return ticket
 }
