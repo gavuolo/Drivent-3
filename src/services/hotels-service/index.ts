@@ -1,18 +1,17 @@
-import { notFoundError, unauthorizedError } from '@/errors';
+import { notFoundError } from '@/errors';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 import hotelsRepository from '@/repositories/hotels-repository';
 import ticketsRepository from '@/repositories/tickets-repository';
-import { Ticket, TicketType, Hotel } from '@prisma/client';
+import { Ticket, TicketType } from '@prisma/client';
 
 async function allHotels(userId: number){
     const ticket = await checkEnrollmentAndTicket(userId)
 
-    //verificar o ticketType
     await checkTicketType(ticket)
-    //verificar o pagamento
     await checkPaymentStatus(ticket)
     
     const hotels = await hotelsRepository.findAllHotels()
+    console.log(hotels)
     return hotels
 }
 async function checkPaymentStatus(ticket: Ticket & {TicketType:TicketType}){
