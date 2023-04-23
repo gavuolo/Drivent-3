@@ -16,6 +16,7 @@
 // describe('GET /hotels', () => {
 //     it('Buscar todos os hoteis', async () => {
 //       const response = await server.get('/hotel');
+//       console.log(response.body)
 //       expect(response.status).toBe(200)
 //     });
 // })
