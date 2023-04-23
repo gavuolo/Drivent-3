@@ -5,7 +5,7 @@ import ticketsRepository from '@/repositories/tickets-repository';
 import { Ticket, TicketType, Hotel } from '@prisma/client';
 
 async function allHotels(userId: number){
-    const ticket = checkEnrollmentAndTicket(userId)
+    const ticket = await checkEnrollmentAndTicket(userId)
 
     //verificar o ticketType
     await checkTicketType(ticket)
@@ -15,24 +15,23 @@ async function allHotels(userId: number){
     const hotels = await hotelsRepository.findAllHotels()
     return hotels
 }
-async function checkPaymentStatus(ticket: Ticket & {TicketType: TicketType}){
+async function checkPaymentStatus(ticket: Ticket & {TicketType:TicketType}){
     if (ticket.status !== 'PAID') {
         throw new Error('The ticket has not yet been paid') 
     }
 }
-async function checkTicketType(ticket: Ticket & {TicketType: TicketType}) {
-
+async function checkTicketType(ticket: Ticket & {TicketType:TicketType}) {
     if (!ticket.TicketType.includesHotel) {
         throw new Error('Ticket type does not include hotel') 
     }
 }
-async function checkEnrollmentAndTicket(userId: number){
+async function checkEnrollmentAndTicket(userId: number): Promise<Ticket & {TicketType: TicketType}>{
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId)
     if(!enrollment) {
         throw notFoundError
     }
     const enrollmentId = enrollment.id
-    const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollmentId)
+    const ticket: Ticket & {TicketType: TicketType} = await ticketsRepository.findTicketByEnrollmentId(enrollmentId)
     if(!ticket) {
         throw notFoundError
     }
