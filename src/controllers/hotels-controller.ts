@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { AuthenticatedRequest } from '@/middlewares';
 import httpStatus from 'http-status';
 import hotelsService from '@/services/hotels-service'
+import { PaymentRequired } from '@/errors/payment-required';
 
 export async function getHotels(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const { userId } = req
@@ -15,7 +16,7 @@ export async function getHotels(req: AuthenticatedRequest, res: Response, next: 
 
 export async function getHotelById(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const { userId } = req
-    const hotelId  = Number(req.params.hotelId)
+    const hotelId = Number(req.params.hotelId)
     try {
         const hotelById = await hotelsService.hotelById(userId, hotelId)
         res.send('oi')
