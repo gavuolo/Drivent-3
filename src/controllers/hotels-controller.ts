@@ -3,11 +3,15 @@ import { AuthenticatedRequest } from '@/middlewares';
 import httpStatus from 'http-status';
 import hotelsService from '@/services/hotels-service'
 import { PaymentRequired } from '@/errors/payment-required';
+import { notFoundError } from '@/errors';
 
 export async function getHotels(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const { userId } = req
     try {
         const hotels = await hotelsService.allHotels(userId)
+        if(!hotels){
+            throw notFoundError()
+        }
         return res.status(httpStatus.OK).send(hotels);
     } catch (err) {
         next(err)
