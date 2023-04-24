@@ -10,7 +10,7 @@ async function allHotels(userId: number){
     await checkPaymentStatus(ticket)
     await checkTicketType(ticket)
     const hotels = await hotelsRepository.findAllHotels()
-    if(!hotels){
+    if(hotels.length <= 0){
         throw notFoundError()
     }
     return hotels

@@ -9,7 +9,7 @@ export async function getHotels(req: AuthenticatedRequest, res: Response, next: 
     const { userId } = req
     try {
         const hotels = await hotelsService.allHotels(userId)
-        if(!hotels){
+        if(hotels.length <= 0){
             throw notFoundError()
         }
         return res.status(httpStatus.OK).send(hotels);
