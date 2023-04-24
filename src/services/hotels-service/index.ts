@@ -7,8 +7,8 @@ import { Ticket, TicketType } from '@prisma/client';
 
 async function allHotels(userId: number){
     const ticket = await checkEnrollmentAndTicket(userId)
-    await checkPaymentStatus(ticket)
     await checkTicketType(ticket)
+    await checkPaymentStatus(ticket)
     const hotels = await hotelsRepository.findAllHotels()
     if(hotels.length <= 0){
         throw notFoundError()
@@ -39,12 +39,13 @@ async function checkEnrollmentAndTicket(userId: number): Promise<Ticket & {Ticke
 }
 async function hotelById(userId: number, hotelId: number){
     const ticket = await checkEnrollmentAndTicket(userId)
-    await checkPaymentStatus(ticket)
     await checkTicketType(ticket)
+    await checkPaymentStatus(ticket)
+  
     const hotel = await hotelsRepository.findHotel(hotelId)
-    if(!hotel){
-        throw notFoundError()
-    }
+    // if(!hotel){
+    //     throw notFoundError()
+    // }
     return hotel 
 
 }

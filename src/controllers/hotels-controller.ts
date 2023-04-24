@@ -23,11 +23,13 @@ export async function getHotelById(req: AuthenticatedRequest, res: Response, nex
     const hotelId = Number(req.params.hotelId)
     try {
         const rooms = await hotelsService.hotelById(userId, hotelId)
-        if(!rooms){
-            throw notFoundError()
-        }
+        console.log("CONSOLE LOG DE DENTRO DO CONTROLLER DA MINHA FUNÇÃO", rooms)
+        // if(!rooms){
+        //     throw notFoundError()
+        // }
         return res.status(httpStatus.OK).send(rooms)
     } catch (err) {
+        console.log(err.name)
         next(err)
     }
 }

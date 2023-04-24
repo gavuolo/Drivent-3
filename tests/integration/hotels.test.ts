@@ -15,7 +15,7 @@ import {
   createUser,
 } from "../factories";
 import { TicketStatus } from "@prisma/client";
-import { createHotel } from "../factories/hotels-factory";
+import { createHotel, createRoom } from "../factories/hotels-factory";
 
 beforeAll(async () => {
   await init();
@@ -102,7 +102,6 @@ describe("GET /hotels", () => {
       expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
     });
     //404 quando não existir hotel
-
     //200 quando tudo der certo e retornar array de objeto
     it("Should respond with status 200 with hotels list", async () => {
       const user = await createUser();
@@ -217,5 +216,64 @@ describe("GET /hotels/:hotelsId", () => {
     });
     //404 não existir hotel
     //retornou tudo ok
+    it("Should respond with status 200 with array hotel rooms", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const isRemote = false;
+      const includesHotel = true;
+      const ticketRemote = await createTicketTypeParameter(
+        isRemote,
+        includesHotel
+      );
+      await createTicket(enrollment.id, ticketRemote.id, TicketStatus.PAID);
+      const hotel = await createHotel();
+      const hotelRoom = await createRoom(hotel.id);
+      const response = await server
+        .get(`/hotels/${hotelRoom.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+        console.log(response.body)
+        console.log(hotel)
+        console.log(hotelRoom)
+      expect(response.status).toEqual(httpStatus.OK);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: hotel.id,
+            name: hotel.name,
+            image: hotel.image,
+            createdAt: hotel.createdAt.toISOString(),
+            updatedAt: hotel.updatedAt.toISOString(),
+            Rooms: [
+              {
+                id: hotelRoom.id,
+                name: hotelRoom.name,
+                capacity: hotelRoom.capacity,
+                hotelId: hotelRoom.id,
+                createdAt: hotelRoom.createdAt.toISOString(),
+                updatedAt: hotelRoom.updatedAt.toISOString(),
+              },
+            ],
+          }),
+        ])
+      );
+    });
   });
 });
+
+// expect(response.body).toEqual(expect.objectContaining({
+//   id: hotel.id,
+//   name: hotel.name,
+//   image: hotel.image,
+//   createdAt: hotel.createdAt.toISOString(),
+//   updatedAt: hotel.updatedAt.toISOString(),
+//   Rooms: [{
+//     id: hotelRoom.id,
+//      name: hotelRoom.name,
+//     capacity: hotelRoom.capacity,
+//     hotelId: hotelRoom.id,
+//     createdAt: hotelRoom.createdAt.toISOString(),
+//      updatedAt: hotelRoom.updatedAt.toISOString(),
+//   }]
+// }))
