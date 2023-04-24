@@ -41,12 +41,11 @@ async function hotelById(userId: number, hotelId: number){
     const ticket = await checkEnrollmentAndTicket(userId)
     await checkTicketType(ticket)
     await checkPaymentStatus(ticket)
-  
-    const hotel = await hotelsRepository.findHotel(hotelId)
-    // if(!hotel){
-    //     throw notFoundError()
-    // }
-    return hotel 
+    const hotelRooms = await hotelsRepository.findHotel(hotelId)
+    if(!hotelRooms){
+        throw notFoundError()
+    }
+    return hotelRooms 
 
 }
 export default {
