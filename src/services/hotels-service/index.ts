@@ -37,16 +37,16 @@ async function checkEnrollmentAndTicket(userId: number): Promise<Ticket & {Ticke
     }
     return ticket
 }
-async function hotelById(hotelId: number, userId: number){
+async function hotelById(userId: number, hotelId: number){
     const ticket = await checkEnrollmentAndTicket(userId)
     await checkPaymentStatus(ticket)
     await checkTicketType(ticket)
-
     const hotel = await hotelsRepository.findHotel(hotelId)
-    // if(!hotel){
-    //     throw notFoundError()
-    // }
-    return hotel
+    if(!hotel){
+        throw notFoundError()
+    }
+    return hotel 
+
 }
 export default {
     allHotels,

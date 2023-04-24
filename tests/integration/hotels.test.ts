@@ -91,7 +91,10 @@ describe("GET /hotels", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const isRemote = true;
       const includesHotel = false;
-      const ticketRemote = await createTicketTypeParameter(isRemote, includesHotel);
+      const ticketRemote = await createTicketTypeParameter(
+        isRemote,
+        includesHotel
+      );
       await createTicket(enrollment.id, ticketRemote.id, TicketStatus.PAID);
       const response = await server
         .get("/hotels")
@@ -107,7 +110,10 @@ describe("GET /hotels", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const isRemote = false;
       const includesHotel = true;
-      const ticketType = await createTicketTypeParameter(isRemote, includesHotel);
+      const ticketType = await createTicketTypeParameter(
+        isRemote,
+        includesHotel
+      );
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
       await createHotel();
       const response = await server
@@ -176,31 +182,39 @@ describe("GET /hotels/:hotelsId", () => {
     });
     //402 quando o ticket não estiver pago
     it("Should respond with status 402 when ticket is not paid", async () => {
-        const user = await createUser();
-        const token = await generateValidToken(user);
-        const enrollment = await createEnrollmentWithAddress(user);
-        const ticketType = await createTicketIncludesTicketType();
-        await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
-        const response = await server
-          .get("/hotels/1")
-          .set("Authorization", `Bearer ${token}`);
-        console.log(response.body)
-        expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
-      });
-     //402 quando ticket for remoto e não incluir hotel
-     it("Should respond with status 402 when ticket is remote and not includes hotel", async () => {
-        const user = await createUser();
-        const token = await generateValidToken(user);
-        const enrollment = await createEnrollmentWithAddress(user);
-        const isRemote = true;
-        const includesHotel = false;
-        const ticketRemote = await createTicketType(isRemote, includesHotel);
-        await createTicket(enrollment.id, ticketRemote.id, TicketStatus.PAID);
-        const response = await server
-          .get("/hotels/1")
-          .set("Authorization", `Bearer ${token}`);
-        expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
-      });
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const isRemote = false;
+      const includesHotel = true;
+      const ticketType = await createTicketTypeParameter(
+        isRemote,
+        includesHotel
+      );
+      await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+      await createHotel();
+      const response = await server
+        .get("/hotels/1")
+        .set("Authorization", `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
+    });
+    //402 quando ticket for remoto e não incluir hotel
+    it("Should respond with status 402 when ticket is remote and not includes hotel", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const isRemote = true;
+      const includesHotel = false;
+      const ticketRemote = await createTicketTypeParameter(
+        isRemote,
+        includesHotel
+      );
+      await createTicket(enrollment.id, ticketRemote.id, TicketStatus.PAID);
+      const response = await server
+        .get("/hotels/1")
+        .set("Authorization", `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
+    });
     //404 não existir hotel
     //retornou tudo ok
   });
